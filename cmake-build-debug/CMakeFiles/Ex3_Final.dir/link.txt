@@ -1,0 +1,2 @@
+/usr/bin/ar qc libEx3_Final.a CMakeFiles/Ex3_Final.dir/library.c.o
+/usr/bin/ranlib libEx3_Final.a
