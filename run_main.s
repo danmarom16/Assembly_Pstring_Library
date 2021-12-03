@@ -61,7 +61,7 @@
         # move &opt to rdi, &p1 to rsi, &p2 to rdx
         movzbl -16(%rbp), %edi      # takes the char 'opt' and puts it in edi with zero-fill for long
         leaq -528(%rbp), %rsi
-        leaq -272(%rbp), %rdx
+        leaq -272(%rbp), %rcx
         call func_select
 
     end:

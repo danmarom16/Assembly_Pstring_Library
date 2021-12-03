@@ -6,7 +6,6 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.20"
@@ -39,7 +38,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "ex3::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-ex3-Debug-581e4a56a476dd7824e1.json",
+					"jsonFile" : "target-ex3-Debug-b2263c8ff9b433145cd3.json",
 					"name" : "ex3",
 					"projectIndex" : 0
 				}
@@ -55,6 +54,6 @@
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 3
+		"minor" : 2
 	}
 }

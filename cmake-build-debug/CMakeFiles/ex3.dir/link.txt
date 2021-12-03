@@ -1,1 +1,1 @@
-/usr/bin/cc  -no-pie -g CMakeFiles/ex3.dir/main.c.o CMakeFiles/ex3.dir/run_main.s.o CMakeFiles/ex3.dir/func_select.s.o -o ex3 
+/usr/bin/cc  -no-pie -g CMakeFiles/ex3.dir/main.c.o CMakeFiles/ex3.dir/run_main.s.o CMakeFiles/ex3.dir/func_select.s.o CMakeFiles/ex3.dir/pstring.s.o -o ex3 

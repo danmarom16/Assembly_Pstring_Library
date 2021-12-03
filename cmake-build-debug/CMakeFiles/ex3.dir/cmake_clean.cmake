@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/ex3.dir/func_select.s.o"
   "CMakeFiles/ex3.dir/main.c.o"
+  "CMakeFiles/ex3.dir/pstring.s.o"
   "CMakeFiles/ex3.dir/run_main.s.o"
   "ex3"
   "ex3.pdb"

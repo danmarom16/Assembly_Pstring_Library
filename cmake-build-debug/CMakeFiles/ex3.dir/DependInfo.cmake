@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_ASM
   "/home/dan/CLionProjects/Computer Architecture/Ex3_Final/func_select.s" "/home/dan/CLionProjects/Computer Architecture/Ex3_Final/cmake-build-debug/CMakeFiles/ex3.dir/func_select.s.o"
+  "/home/dan/CLionProjects/Computer Architecture/Ex3_Final/pstring.s" "/home/dan/CLionProjects/Computer Architecture/Ex3_Final/cmake-build-debug/CMakeFiles/ex3.dir/pstring.s.o"
   "/home/dan/CLionProjects/Computer Architecture/Ex3_Final/run_main.s" "/home/dan/CLionProjects/Computer Architecture/Ex3_Final/cmake-build-debug/CMakeFiles/ex3.dir/run_main.s.o"
   )
 set(CMAKE_ASM_COMPILER_ID "GNU")
