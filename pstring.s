@@ -21,28 +21,28 @@ pstrlen:
     ret
 
 .globl replaceChar
-.type replaceChar, @function        # p is in rdi, oldChar is in sil, newChar is in cl
+.type replaceChar, @function        # p is in rdi, oldChar is in sil, newChar is in dl
 replaceChar:
     push %rbp                       #set-up
-    push %rbx
     movq %rsp, %rbp
+    push %rbx
     xor %rbx, %rbx                  # i = 0
     xor %r8, %r8                    # initiallize r8 to 0
 
-    movzbl (%rdi), %r8d               # moves p.len to rb8 (value)
+    movzbq (%rdi), %r8               # moves p.len to rb8 (value)
     leaq 1(%rdi), %r9               # moves p.str to r9 (adress)
     checkFor:
-        cmp %rbx, %r8               # compare i and p.len
+        cmp %r8, %rbx               # compare i and p.len
         ja Done                     # if i > p.len (even if i is negative) terminate for loop
     forLoop:
         movzbl (%r9, %rbx), %r10d  # temp = *(p + i*1)
-        cmp %r10d, %r8d             # compares temp and oldChar
+        cmp %r10b, %sil            # compares temp and oldChar
         je True                     # if temp == oldChar goto "True"
     inc:
         inc %rbx                    # i++
         jmp checkFor
     True:
-        movb %cl, (%r9, %rbx, 1)     #*(p + i*1) = newChar
+        movb %dl, (%r9, %rbx, 1)     #*(p + i*1) = newChar
         jmp inc
     Done:
         leaq (%rdi), %rax

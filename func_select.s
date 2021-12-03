@@ -11,8 +11,9 @@
         .quad .done
 
  #func_select rodata
-    format_2c:       .string "%c %c"
-    format_2d:       .string "%d %d"
+    format_c:       .string "%c"
+    format_d:       .string "%d"
+    format_s:       .string "%s"
     format_50_60:   .string "first pstring length: %d, second pstring length: %d\n"
     format_52:      .string "old char: %c, new char: %c, first string: %s, second string: %s\n"
     format_53_54:   .string "length: %d, string: %s\n"
@@ -70,8 +71,36 @@
         call printf
         jmp .done
     .L52:
+        movq $format_s, %rdi        # move "%d" to rdi
+        subq $16, %rsp              # allocate 16 bytes
+        leaq -16(%rbp), %rsi        # move adress that will store oldChar to rsi.
+        xor %rax, %rax
+        call scanf                  # scans oldChar to 1st byte of rax
+
+        movq $format_s, %rdi
+        leaq -8(%rbp), %rsi         # move adress that will store newChar to rsi
+        xor %rax, %rax
+        call scanf                   # scans newChar to 1st byte of rax
+
+        leaq (%r14), %rdi            # moves &p1 to rdi
+        movzbq -16(%rbp), %rsi       # moves oldChar to rsi
+        movzbq -8(%rbp), %rdx       # moves newChar to rdx
+        xor %rax, %rax
         call replaceChar
-        movq $format_52, %rdi
+        movq %rax, %r14               # store r14 after replacement back in r14
+
+        leaq (%r15), %rdi            # moves &p1 to rdi
+        movzbq -16(%rbp), %rsi       # moves oldChar to rsi
+        movzbq -8(%rbp), %rdx       # moves newChar to rdx
+        xor %rax, %rax
+        call replaceChar
+        movq %rax, %r15
+
+        movq $format_52, %rdi       # moves matching format to rdi
+        movzbq -16(%rbp), %rsi      # moves oldChar to rsi
+        movzbq -8(%rbp), %rdx       # moves newChar to rdx
+        leaq 1(%r14), %rcx         # moves &p1 to rcx
+        leaq 1(%r15), %r8          # moves &p2 to r8
         xor %rax, %rax
         call printf
         jmp .done
