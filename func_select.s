@@ -139,7 +139,21 @@
         jmp .done
 
     .L54:
+        leaq (%r14), %rdi             # moves &p1 to rdi
+        call swapCase
+
+        leaq (%r15), %rdi             # moves &p2 to rdi
+        call swapCase
+
         movq $format_53_54, %rdi
+        movzbq (%r14), %rsi
+        leaq 1(%r14), %rdx
+        xor %rax, %rax
+        call printf
+
+        movq $format_53_54, %rdi
+        movzbq (%r15), %rsi
+        leaq 1(%r15), %rdx
         xor %rax, %rax
         call printf
         jmp .done

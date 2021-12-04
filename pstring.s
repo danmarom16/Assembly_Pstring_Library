@@ -133,3 +133,57 @@ pstrijcpy:                          # &dst in rdi, &src in rsi, i in rdx, j in r
         pop %rbp
         ret
 
+.globl swapCase
+.type swapCase, @function
+swapCase:                # &p is in rdi
+    push %rbp
+    movq %rsp, %rbp
+    push %rbx
+    push %r12
+    push %r13
+
+    leaq 1(%rdi), %r13              # moves &p1->str to r13
+    xor %rbx, %rbx                    # i = 0
+    xor %r12, %r12                   # initialize r12 to 0
+    xor %r8, %r8                     # initialoze r8 to 0. (temp = 0)
+    movb (%rdi), %r12b              # moves p.len to r12
+    for_con:
+        cmpb %r12b, %bl                     # compares p.len and i
+        je s_done
+    s_loop:
+       movb (%r13, %rbx, 1), %r8b       # temp =  p->str[i]
+       check_upper:
+           cmpb $65, %r8b            # compare temp to 65
+           jge eq_big_65               # if temp >= 65, he may be upperCase Char
+           jmp next_iter                     # if temp < 65 he is not a char
+       eq_big_65:                # if got here, temp >= 65
+           cmpb $90, %r8b       # compare temp and 90
+           jle is_upper_case           # if temp <= 90 than he is uppercase
+       check_lower:                              # if got here, temp > 90.
+            cmpb $97, %r8b              # compares temp to 97
+            jge eq_bigger_than_97     # if bigger than 97, continue checking
+            jmp next_iter
+       eq_bigger_than_97:
+            cmpb $122, %r8b               # compares temp to 122
+            jle is_lower_case           # if temp <= 122 than he is lower case char
+            jmp next_iter
+       next_iter:
+            inc %rbx
+            jmp for_con
+       s_done:
+            pop %r13
+            pop %r12
+            pop %rbx
+            movq %rbp, %rsp
+            pop %rbp
+            ret
+       is_lower_case:
+            subb $32, %r8b
+            movb %r8b,(%r13, %rbx, 1)
+            jmp next_iter
+       is_upper_case:
+            addb $32, %r8b
+            movb %r8b,(%r13, %rbx, 1)
+            jmp next_iter
+
+
