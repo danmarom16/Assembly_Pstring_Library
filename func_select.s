@@ -37,6 +37,8 @@
     func_select:            # move &opt to rdi, &p1 to rsi, &p2 to rcx
         push %rbp
         movq %rsp, %rbp
+        push %r14
+        push %r15
         leaq (%rsi), %r14     # move &p1 to a calee saved register r14
         leaq (%rcx), %r15     # move &p2 to a calee saved register r15
 
@@ -50,7 +52,7 @@
         ## if values are betweem 0 and 5 - go to the matching lable
         leal -50(%edi), %edx       # normallize switch case values to 0-5
         cmpl $6, %edx              # compares 6 with opt (after normalization, valid values 0-5)
-        ja .L1
+        ja .L1                     # if i > 6 not valid
         dec %edx
         jmp *.jump_table(,%edx,8)   # jumps to the matching lable
     .L60:
@@ -71,7 +73,7 @@
         call printf
         jmp .done
     .L52:
-        movq $format_s, %rdi        # move "%d" to rdi
+        movq $format_s, %rdi        # move "%s" to rdi
         subq $16, %rsp              # allocate 16 bytes
         leaq -16(%rbp), %rsi        # move adress that will store oldChar to rsi.
         xor %rax, %rax
@@ -104,11 +106,38 @@
         xor %rax, %rax
         call printf
         jmp .done
-    .L53:
+    .L53:                           # &dst in rdi, &src in rsi, i in rdx, j in rcx
+        movq $format_d, %rdi        # move "%d" to rdi
+        subq $16, %rsp              # allocate 16 bytes
+        leaq -16(%rbp), %rsi        # move adress that will store i to rsi.
+        xor %rax, %rax
+        call scanf                  # scans oldChar to 1st byte of rax
+
+        movq $format_d, %rdi
+        leaq -8(%rbp), %rsi         # move adress that will store j to rsi
+        xor %rax, %rax
+        call scanf                  # scans newChar to 1st byte of rax
+
+        leaq (%r14), %rdi           # moves &dst to rdi
+        leaq (%r15), %rsi           # moves &src to rsi
+        movl -16(%rbp), %edx        # moves i to rsi
+        movl -8(%rbp), %ecx       # moves j to rdx
+        xor %rax, %rax
+        call pstrijcpy
+
         movq $format_53_54, %rdi
+        movzbq (%r14), %rsi
+        leaq 1(%r14), %rdx
+        xor %rax, %rax
+        call printf
+
+        movq $format_53_54, %rdi
+        movzbq (%r15), %rsi
+        leaq 1(%r15), %rdx
         xor %rax, %rax
         call printf
         jmp .done
+
     .L54:
         movq $format_53_54, %rdi
         xor %rax, %rax
@@ -126,6 +155,8 @@
         jmp .done
     .done:
         xor %rax, %rax
+        pop %r15
+        pop %r14
         movq %rbp, %rsp
         pop %rbp
     ret
