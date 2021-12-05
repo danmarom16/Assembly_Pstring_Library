@@ -184,14 +184,3 @@
         movq %rbp, %rsp
         pop %rbp
     ret
-
-
-
-
-
-
-
-
-
-
-
