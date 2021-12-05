@@ -10,7 +10,6 @@
         .quad .L1   #default
         .quad .done
 
- #func_select rodata
     format_c:       .string "%c"
     format_d:       .string "%d"
     format_s:       .string "%s"
@@ -20,39 +19,28 @@
     format_55:      .string "compare result: %d\n"
     format_f:       .string "invalid option!\n"
 
-    ## test for func_select
-    format_50_60y:   .string "Hi from Lable 50 and 60\n"
-    format_52y:      .string "Hi from Lable 52\n"
-    format_53y:      .string "Hi from Lable 53\n"
-    format_54y:      .string "Hi from Lable 54\n"
-    format_55y:      .string "Hi from Lable 55\n"
-    format_fy:       .string "Hi from Lable 1 - Default\n"
-###
-
-
-
 .section .text
     .globl func_select
     .type func_select, @function
-    func_select:            # move &opt to rdi, &p1 to rsi, &p2 to rcx
+    func_select:                    # move &opt to rdi, &p1 to rsi, &p2 to rcx
         push %rbp
         movq %rsp, %rbp
         push %r14
         push %r15
-        movq %rsi, %r14     # move &p1 to a calee saved register r14
-        movq %rcx, %r15     # move &p2 to a calee saved register r15
+        movq %rsi, %r14             # move &p1 to a calee saved register r14
+        movq %rcx, %r15             # move &p2 to a calee saved register r15
 
-        cmpl $50, %edi      # if equals 50, jump to 50.
+        cmpl $50, %edi              # if equals 50, jump to 50.
         je .L50
-        cmpl $60, %edi      # if equals 60, jump to 50.
+        cmpl $60, %edi              # if equals 60, jump to 50.
         je .L50
-        cmpl $51, %edi      # if equals 51, jump to Default.
+        cmpl $51, %edi              # if equals 51, jump to Default.
         je .L1
 
         ## if values are betweem 0 and 5 - go to the matching lable
-        leal -50(%edi), %edx       # normallize switch case values to 0-5
-        cmpl $6, %edx              # compares 6 with opt (after normalization, valid values 0-5)
-        ja .L1                     # if i > 6 not valid
+        leal -50(%edi), %edx        # normallize switch case values to 0-5
+        cmpl $6, %edx               # compares 6 with opt (after normalization, valid values 0-5)
+        ja .L1                      # if i > 6 not valid
         dec %edx
         jmp *.jump_table(,%edx,8)   # jumps to the matching lable
     .L60:
@@ -82,17 +70,17 @@
         movq $format_s, %rdi
         leaq -8(%rbp), %rsi         # move adress that will store newChar to rsi
         xor %rax, %rax
-        call scanf                   # scans newChar to 1st byte of rax
+        call scanf                  # scans newChar to 1st byte of rax
 
-        movq %r14, %rdi            # moves &p1 to rdi
-        movzbq -16(%rbp), %rsi       # moves oldChar to rsi
+        movq %r14, %rdi             # moves &p1 to rdi
+        movzbq -16(%rbp), %rsi      # moves oldChar to rsi
         movzbq -8(%rbp), %rdx       # moves newChar to rdx
         xor %rax, %rax
         call replaceChar
-        movq %rax, %r14               # store r14 after replacement back in r14
+        movq %rax, %r14             # store r14 after replacement back in r14
 
-        movq %r15, %rdi            # moves &p1 to rdi
-        movzbq -16(%rbp), %rsi       # moves oldChar to rsi
+        movq %r15, %rdi             # moves &p1 to rdi
+        movzbq -16(%rbp), %rsi      # moves oldChar to rsi
         movzbq -8(%rbp), %rdx       # moves newChar to rdx
         xor %rax, %rax
         call replaceChar
@@ -101,8 +89,8 @@
         movq $format_52, %rdi       # moves matching format to rdi
         movzbq -16(%rbp), %rsi      # moves oldChar to rsi
         movzbq -8(%rbp), %rdx       # moves newChar to rdx
-        leaq 1(%r14), %rcx         # moves &p1 to rcx
-        leaq 1(%r15), %r8          # moves &p2 to r8
+        leaq 1(%r14), %rcx          # moves &p1 to rcx
+        leaq 1(%r15), %r8           # moves &p2 to r8
         xor %rax, %rax
         call printf
         jmp .done
@@ -118,10 +106,10 @@
         xor %rax, %rax
         call scanf                  # scans newChar to 1st byte of rax
 
-        movq %r14, %rdi           # moves &dst to rdi
-        movq %r15, %rsi           # moves &src to rsi
-        movl -16(%rbp), %edx      # moves i to edx
-        movl -8(%rbp), %ecx       # moves j to ecx
+        movq %r14, %rdi             # moves &dst to rdi
+        movq %r15, %rsi             # moves &src to rsi
+        movl -16(%rbp), %edx        # moves i to edx
+        movl -8(%rbp), %ecx         # moves j to ecx
         xor %rax, %rax
         call pstrijcpy
         movq %rax, %r14
