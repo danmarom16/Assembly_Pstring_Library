@@ -66,7 +66,7 @@ pstrlen:
     ret
 
 .globl replaceChar
-.type replaceChar, @function        # p is in rdi, oldChar is in sil, newChar is in dl
+.type replaceChar, @function        # &p is in rdi, oldChar is in sil, newChar is in dl
 replaceChar:
     push %rbp                       #set-up
     movq %rsp, %rbp
@@ -89,7 +89,7 @@ replaceChar:
         movb %dl, (%r9, %rbx, 1)     #*(p + i*1) = newChar
         jmp inc
     r_Done:
-        leaq (%rdi), %rax
+        movq %rdi, %rax
         pop %rbx
         movq %rbp, %rsp
         pop %rbp
@@ -116,6 +116,7 @@ pstrijcpy:                          # &dst in rdi, &src in rsi, i in rdx, j in r
     cmp $0, %rax    ## if validation returned 0, there is an e-validation
     je p_Done
     ##
+
     leaq 1(%rdi), %r12                              # moves dst->str to r12
     leaq 1(%rsi), %r13                              # moves src->str to r13
     loop:
@@ -126,7 +127,7 @@ pstrijcpy:                          # &dst in rdi, &src in rsi, i in rdx, j in r
         js p_Done                         # if i > j done
         jmp loop
     p_Done:
-        xor %rax, %rax
+        movq %rdi, %rax
         pop %r13
         pop %r12
         movq %rbp, %rsp
@@ -171,6 +172,7 @@ swapCase:                # &p is in rdi
             inc %rbx
             jmp for_con
        s_done:
+            movq %rdi, %rax
             pop %r13
             pop %r12
             pop %rbx
@@ -186,4 +188,55 @@ swapCase:                # &p is in rdi
             movb %r8b,(%r13, %rbx, 1)
             jmp next_iter
 
+.globl pstrijcmp                # &p1 in rdi, &p2 in rsi, i in edx, j in ecx
+.type pstrijcmp, @function
+pstrijcmp:
+    push %rbp                       # check if i,j >=0, and i<=dst.len-1, j<= src.len-1
+    movq %rsp, %rbp
+    push %r12
+    push %r13
+
+    ## backup caller saved registers, call validation and restore them
+    push %rdi
+    push %rsi
+    push %rdx
+    push %rcx
+    call validation
+    pop %rcx
+    pop %rdx
+    pop %rsi
+    pop %rdi
+    cmp $0, %rax    ## if validation returned 0, there is an e-validation
+    movq $-2, %rax
+    je func_done
+    ##
+
+    leaq 1(%rdi), %r12                              # moves dst->str to r12
+    leaq 1(%rsi), %r13                              # moves src->str to r13
+    p_loop:
+        movb (%r12, %rdx, 1), %r8b                # moves p1->str[i] to r8b
+        movb (%r13, %rdx, 1), %r9b                  # moves p2->str[i] to r9b
+        cmpb %r9b, %r8b                     # compares p1->str[i] : p2->str[i]
+        jg first_is_bigger              # if r8b > r9b
+        jl second_is_bigger
+    equal_chars:                        # if we got here, that means that
+        inc %rdx
+        cmp %rdx, %rcx                   # compares j and i (does i-j) p1->str[i] == p2->str[i]
+        js equals                        # if i > j done
+        jmp p_loop
+    equals:
+        movq $0, %rax
+        jmp func_done
+    first_is_bigger:
+        movq $1, %rax
+        jmp func_done
+    second_is_bigger:
+        movq $-1, %rax
+        jmp func_done           # for readabillity
+    func_done:
+        pop %r13
+        pop %r12
+        movq %rbp, %rsp
+        pop %rbp
+        ret
 

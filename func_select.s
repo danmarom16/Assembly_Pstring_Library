@@ -39,8 +39,8 @@
         movq %rsp, %rbp
         push %r14
         push %r15
-        leaq (%rsi), %r14     # move &p1 to a calee saved register r14
-        leaq (%rcx), %r15     # move &p2 to a calee saved register r15
+        movq %rsi, %r14     # move &p1 to a calee saved register r14
+        movq %rcx, %r15     # move &p2 to a calee saved register r15
 
         cmpl $50, %edi      # if equals 50, jump to 50.
         je .L50
@@ -58,7 +58,7 @@
     .L60:
     .L50:
         xor %rax, %rax              # set-up call for pstrlen
-        leaq (%r14), %rdi             # set-up call for pstrlen
+        movq %r14, %rdi             # set-up call for pstrlen
         call pstrlen
 
         movq %rax, %rbx             # saves p1.len in ebx calee saved
@@ -84,14 +84,14 @@
         xor %rax, %rax
         call scanf                   # scans newChar to 1st byte of rax
 
-        leaq (%r14), %rdi            # moves &p1 to rdi
+        movq %r14, %rdi            # moves &p1 to rdi
         movzbq -16(%rbp), %rsi       # moves oldChar to rsi
         movzbq -8(%rbp), %rdx       # moves newChar to rdx
         xor %rax, %rax
         call replaceChar
         movq %rax, %r14               # store r14 after replacement back in r14
 
-        leaq (%r15), %rdi            # moves &p1 to rdi
+        movq %r15, %rdi            # moves &p1 to rdi
         movzbq -16(%rbp), %rsi       # moves oldChar to rsi
         movzbq -8(%rbp), %rdx       # moves newChar to rdx
         xor %rax, %rax
@@ -118,12 +118,13 @@
         xor %rax, %rax
         call scanf                  # scans newChar to 1st byte of rax
 
-        leaq (%r14), %rdi           # moves &dst to rdi
-        leaq (%r15), %rsi           # moves &src to rsi
-        movl -16(%rbp), %edx        # moves i to rsi
-        movl -8(%rbp), %ecx       # moves j to rdx
+        movq %r14, %rdi           # moves &dst to rdi
+        movq %r15, %rsi           # moves &src to rsi
+        movl -16(%rbp), %edx      # moves i to edx
+        movl -8(%rbp), %ecx       # moves j to ecx
         xor %rax, %rax
         call pstrijcpy
+        movq %rax, %r14
 
         movq $format_53_54, %rdi
         movzbq (%r14), %rsi
@@ -139,11 +140,13 @@
         jmp .done
 
     .L54:
-        leaq (%r14), %rdi             # moves &p1 to rdi
+        movq %r14, %rdi             # moves &p1 to rdi
         call swapCase
+        movq %rax, %r14
 
-        leaq (%r15), %rdi             # moves &p2 to rdi
+        movq %r15, %rdi             # moves &p2 to rdi
         call swapCase
+        movq %rax, %r15
 
         movq $format_53_54, %rdi
         movzbq (%r14), %rsi
@@ -158,6 +161,25 @@
         call printf
         jmp .done
     .L55:
+        movq $format_d, %rdi        # move "%d" to rdi
+        subq $16, %rsp              # allocate 16 bytes
+        leaq -16(%rbp), %rsi        # move adress that will store i to rsi.
+        xor %rax, %rax
+        call scanf                  # scans oldChar to 1st byte of rax
+
+        movq $format_d, %rdi
+        leaq -8(%rbp), %rsi         # move adress that will store j to rsi
+        xor %rax, %rax
+        call scanf                  # scans newChar to 1st byte of rax
+
+        movq %r14, %rdi             # moves &p1 to rdi
+        movq %r15, %rsi             # moves &p2 to rsi
+        movl -16(%rbp), %edx        # moves i to esx
+        movl -8(%rbp), %ecx         # moves j to ecx
+        xor %rax, %rax
+        call pstrijcmp
+
+        movq %rax, %rsi
         movq $format_55, %rdi
         xor %rax, %rax
         call printf
